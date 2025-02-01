@@ -1,65 +1,62 @@
-@model IEnumerable<Agence_voyage.Models.Voyage>
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<Agence_voyage.Models.Voyage>
 
 @{
     ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Liste des voyages</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Créer un nouveau voyage</a>
 </p>
-<table class="table">
+
+<table class="table table-striped">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateDepart)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateRetour)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prix)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Chauffeur)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Flotte)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>Description</th>
+        <th>Date de départ</th>
+        <th>Date de retour</th>
+        <th>Prix</th>
+        <th>Chauffeur</th>
+        <th>Flotte</th>
+        <th>Actions</th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
         <tr>
+            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+            <td>@Html.DisplayFor(modelItem => item.DateDepart)</td>
+            <td>@Html.DisplayFor(modelItem => item.DateRetour)</td>
+            <td>@Html.DisplayFor(modelItem => item.Prix)</td>
+            <td>@Html.DisplayFor(modelItem => item.Chauffeur.Nom)</td>
+            <td>@Html.DisplayFor(modelItem => item.Flotte.Matricule)</td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateDepart)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateRetour)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prix)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Chauffeur.Nom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Flotte.Matricule)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Modifier</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Détails</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Supprimer</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+<!-- Pagination -->
+<div class="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+    {
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        MaximumPageNumbersToDisplay = 5,
+        DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+        UlElementClasses = new string[] { "pagination" },
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" }
+    })
+</div>

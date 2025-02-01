@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Agence_voyage.Models;
+using X.PagedList.Extensions;
 
 namespace AgenceVoyage.Controllers
 {
@@ -19,10 +17,18 @@ namespace AgenceVoyage.Controllers
         }
 
         // GET: Voyages
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
             var applicationDbContext = _context.Voyages.Include(v => v.Chauffeur).Include(v => v.Flotte);
-            return View(await applicationDbContext.ToListAsync());
+            int pageSize = 5;
+            int pageNumber = page ?? 1; // Numéro de page actuel (1 par défaut)
+
+            var voyages = _context.Voyages
+                .Include(v => v.Chauffeur)
+                .Include(v => v.Flotte)
+                .OrderBy(v => v.DateDepart)
+                .ToPagedList(pageNumber, pageSize);
+            return View(voyages);
         }
 
         // GET: Voyages/Details/5
@@ -105,6 +111,8 @@ namespace AgenceVoyage.Controllers
             {
                 try
                 {
+                    voyage.DateDepart = DateTime.SpecifyKind(voyage.DateDepart, DateTimeKind.Utc);
+                    voyage.DateRetour = DateTime.SpecifyKind(voyage.DateRetour, DateTimeKind.Utc);
                     _context.Update(voyage);
                     await _context.SaveChangesAsync();
                 }

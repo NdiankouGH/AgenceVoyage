@@ -1,71 +1,94 @@
-@model IEnumerable<Agence_voyage.Models.Agence>
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model IPagedList<Agence_voyage.Models.Agence>
 
 @{
     ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Liste des agences</h1>
 
+@using (Html.BeginForm("Index", "Agences", FormMethod.Get))
+{
+    <div class="form-group">
+        @Html.Label("Adresse", null, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBox("adresse", ViewBag.Adresse as string, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.Label("ninea", null, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBox("ninea", ViewBag.Ninea as string, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.Label("rccm", null, new { @class = "control-label col-md-2" })
+        <div class="col-md-4">
+            @Html.TextBox("rccm", ViewBag.Rccm as string, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Rechercher" class="btn btn-primary" />
+        </div>
+    </div>
+}
+<br/>
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Créer une nouvelle agence</a>
 </p>
-<table class="table">
+
+<table class="table table-striped">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Adresse)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Latitude)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Longitude)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RCCM)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ninea)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Notes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Gestionnaire)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>Adresse</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>RCCM</th>
+        <th>Ninea</th>
+        <th>Notes</th>
+        <th>Gestionnaire</th>
+        <th>Actions</th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
         <tr>
+            <td>@Html.DisplayFor(modelItem => item.Adresse)</td>
+            <td>@Html.DisplayFor(modelItem => item.Latitude)</td>
+            <td>@Html.DisplayFor(modelItem => item.Longitude)</td>
+            <td>@Html.DisplayFor(modelItem => item.RCCM)</td>
+            <td>@Html.DisplayFor(modelItem => item.Ninea)</td>
+            <td>@Html.DisplayFor(modelItem => item.Notes)</td>
+            <td>@Html.DisplayFor(modelItem => item.Gestionnaire.Email)</td>
             <td>
-                @Html.DisplayFor(modelItem => item.Adresse)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Latitude)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Longitude)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RCCM)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ninea)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Notes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gestionnaire.Email)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Modifier</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Détails</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Supprimer</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+<!-- Pagination -->
+<div class="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, adresse = ViewBag.Adresse, ninea = ViewBag.Ninea, rccm = ViewBag.Rccm }), new PagedListRenderOptions
+    {
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        MaximumPageNumbersToDisplay = 5,
+        DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+        UlElementClasses = new string[] { "pagination" },
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" }
+    })
+</div>

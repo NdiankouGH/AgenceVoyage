@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Agence_voyage.Models;
+using X.PagedList.Extensions;
 
 namespace AgenceVoyage.Controllers
 {
@@ -19,13 +20,40 @@ namespace AgenceVoyage.Controllers
         }
 
         // GET: Agences
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page, string adresse, string ninea, string rccm)
         {
-            var applicationDbContext = _context.Agences.Include(a => a.Gestionnaire);
-            return View(await applicationDbContext.ToListAsync());
-        }
+            int pageSize = 5; // Nombre d'éléments par page
+            int pageNumber = page ?? 1; // Numéro de page actuel (1 par défaut)
 
-        // GET: Agences/Details/5
+            var query = _context.Agences
+                .Include(a => a.Gestionnaire)
+                .AsQueryable();
+
+            // Appliquer les filtres
+            if (!string.IsNullOrEmpty(adresse))
+            {
+                query = query.Where(a => a.Adresse.Contains(adresse));
+            }
+            if (!string.IsNullOrEmpty(ninea))
+            {
+                query = query.Where(a => a.Ninea.Contains(ninea));
+            }
+            if (!string.IsNullOrEmpty(rccm))
+            {
+                query = query.Where(a => a.RCCM.Contains(rccm));
+            }
+
+            var agences =  query
+                .OrderBy(a => a.Ninea)
+                .ToPagedList(pageNumber, pageSize);
+
+            // Passer les filtres à la vue pour les conserver dans le formulaire
+            ViewBag.Adresse = adresse;
+            ViewBag.Ninea = ninea;
+            ViewBag.Rccm = rccm;
+
+            return View(agences); // Retourne la liste paginée à la vue
+        }        // GET: Agences/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

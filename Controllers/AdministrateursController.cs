@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using X.PagedList;
 using Microsoft.EntityFrameworkCore;
 using Agence_voyage.Models;
-
+using X.PagedList;
 namespace AgenceVoyage.Controllers
 {
     public class AdministrateursController : Controller
@@ -19,8 +15,9 @@ namespace AgenceVoyage.Controllers
         }
 
         // GET: Administrateurs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
+  
             return View(await _context.Administrateurs.ToListAsync());
         }
 
